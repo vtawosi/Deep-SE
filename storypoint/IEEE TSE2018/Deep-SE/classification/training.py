@@ -106,7 +106,8 @@ else: type = 'multi'
 
 saveResult = SaveResult([[valid_t, valid_tmask, valid_d, valid_dmask], valid_y,
                          [test_t, test_tmask, test_d, test_dmask], test_y],
-                        metric_type=type, fileResult=fResult, fileParams=fParams,train_label=train_y)
+                        metric_type=type, fileResult=fResult, fileParams=fParams,train_label=train_y,
+                        mae_r_guess=mae_rg)
 
 callbacks = [saveResult, NanStopping()]
 his = model.fit([train_t, train_tmask, train_d, train_dmask], train_y,
