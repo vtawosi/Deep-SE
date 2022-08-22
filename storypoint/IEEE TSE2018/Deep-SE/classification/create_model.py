@@ -86,7 +86,7 @@ class SaveResult(Callback):
             pre = pr25(y_true, y_pred)
             # pre, rec = auc, f1 # default
 
-            y_pred_guess = numpy.ones(len(y_true)) + numpy.mean(self.train_label)
+            y_pred_guess = numpy.zeros(len(y_true)) + numpy.mean(self.train_label)
             mae_guess = metrics.mean_absolute_error(y_true, y_pred_guess)
             sa = (1 - (auc / mae_guess)) * 100
             f1 = sa
