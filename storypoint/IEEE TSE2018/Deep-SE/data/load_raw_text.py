@@ -42,4 +42,5 @@ def load(path):
     description = normalize(data[:, 2].astype('str'))
     labels = data[:, 3].astype('float32')
 
-    return title, description, cut_of90(labels)
+    # return title, description, cut_of90(labels)
+    return title, description, labels
