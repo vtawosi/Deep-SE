@@ -12,7 +12,7 @@ class SaveResult(Callback):
     '''
 
     def __init__(self, data=None, metric_type='binary', fileResult='', fileParams='', train_label='', minPatience=5,
-                 maxPatience=30, hiddenLayer=0):
+                 maxPatience=30, hiddenLayer=0, mae_r_guess=0):
         # metric type can be: binary, multi
         super(SaveResult, self).__init__()
 
@@ -26,6 +26,7 @@ class SaveResult(Callback):
         self.actual = None
         self.estimate = None
         self.hdl = hiddenLayer
+        self.mae_r_guess = mae_r_guess
         # print 'Number of hiddenLayer' + str(self.hdl)
         f = open('log/' + fileResult, 'w')
 
@@ -82,13 +83,12 @@ class SaveResult(Callback):
             pre = metrics.precision_score(y_true, y_pred, average='micro')
             rec = metrics.recall_score(y_true, y_pred, average='micro')
         else:
-            auc = metrics.mean_absolute_error(y_true, y_pred)  # mae
+            mae = metrics.mean_absolute_error(y_true, y_pred)  # mae
             pre = pr25(y_true, y_pred)
             # pre, rec = auc, f1 # default
 
-            y_pred_guess = numpy.zeros(len(y_true)) + numpy.mean(self.train_label)
-            mae_guess = metrics.mean_absolute_error(y_true, y_pred_guess)
-            sa = (1 - (auc / mae_guess)) * 100
+            mae_guess = self.mae_r_guess
+            sa = (1 - (mae / mae_guess)) * 100
             f1 = sa
             rec = 0  # no use metric
             # self.ar = numpy.abs(numpy.subtract(y_true, y_pred))
