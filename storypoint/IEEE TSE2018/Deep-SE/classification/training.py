@@ -8,7 +8,7 @@ numpy.random.seed(args['-seed'])
 from keras.optimizers import *
 from keras.objectives import *
 from create_model import *
-
+from baselines import *
 ################################# LOAD DATA #######################################################
 dataset = '../data/' + args['-data'] + '.pkl.gz'
 dataPre = args['-dataPre']
@@ -20,6 +20,7 @@ vocab_size = args['-vocab']
 pool = args['-pool']
 pretrain = args['-pretrain']
 max_len = args['-len']
+hidden_layer = args['-hiddenLayer']
 
 if pretrain == 'x':
     emb_weight = None
@@ -43,6 +44,15 @@ valid_t, valid_tmask, valid_d, valid_dmask = prepare_data.prepare_data(valid_t, 
 test_t, test_tmask, test_d, test_dmask = prepare_data.prepare_data(test_t, test_d, vocab_size, max_len)
 
 print ('ntrain: %d, n_valid: %d, n_test: %d' % (len(train_y), len(valid_y), len(test_y)))
+
+if not os.path.exists('bestModels/'):
+    os.makedirs('bestModels/')
+if not os.path.exists('models/'):
+    os.makedirs('models/')
+if not os.path.exists('log/ar'):
+    os.makedirs('log/ar')
+
+mae_rg = do_baselines('baselines', 'log/ar', args['-data'], train_y, test_y)
 
 if train_y.dtype == 'float32':
     n_classes = -1
@@ -74,7 +84,8 @@ else:
     # dropout_inp=False, dropout_hid=True
     model = create_model(n_classes=n_classes, vocab_size=vocab_size + 1, inp_len=train_t.shape[-1], emb_dim=hid_dim,
                          seq_model=seq_model, nnet_model=nnet_model, pool_mode=pool,
-                         dropout_inp=dropout_inp, dropout_hid=dropout_hid, emb_weight=emb_weight)
+                         dropout_inp=dropout_inp, dropout_hid=dropout_hid, emb_weight=emb_weight,
+                         hidden_layer=hidden_layer)
 
 model.summary()
 json_string = model.to_json()
